@@ -1,0 +1,14 @@
+**/node_modules
+**/dist
+**/dev-dist
+.yarn
+yarn.lock
+.pnp.*
+web/public/icons
+mobile/assets
+mobile/.expo
+_to_delete
+
+# Proyectos que no formatea Prettier (tienen sus propias convenciones)
+Trazent.Api
+db

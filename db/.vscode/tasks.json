@@ -1,0 +1,111 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "apply-pending.sh",
+			"command": "C:/Program Files/Git/bin/bash.exe",
+			"args": ["scripts\\apply-pending.sh"],
+			"group": "build",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+		},
+		{
+			"type": "shell",
+			"label": "apply-pending.exe",
+			"command": "${workspaceFolder}\\scripts\\apply-pending.exe",
+			"group": "build",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			}
+		},
+		{
+			"type": "shell",
+			"label": "new-sql.sh",
+			"command": "C:/Program Files/Git/bin/bash.exe",
+			"args": [
+				"new-sql.sh",
+				"${input:newSqlType}",
+				"${input:newSqlAction}",
+				"${input:newSqlName}"
+			],
+			"group": "build",
+			"options": {
+				"cwd": "${workspaceFolder}\\scripts\\"
+			}
+		},
+		{
+			"type": "shell",
+			"label": "latest-functions.sh",
+			"command": "C:/Program Files/Git/bin/bash.exe",
+			"args": [
+				"latest-functions.sh",
+				"${input:functionName}",
+				"${input:openFlag}"
+			],
+			"group": "build",
+			"options": {
+				"cwd": "${workspaceFolder}\\scripts"
+			}
+		},
+		{
+			"type": "shell",
+			"label": "latest-functions.exe",
+			"command": "${workspaceFolder}\\scripts\\latest-function.exe",
+			"args": [
+				"${input:functionName}",
+				"${input:openFlag}"
+			],
+			"group": "build",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			}
+		},
+		{
+			"type": "shell",
+			"label": "rds-tunnel.sh",
+			"command": "C:/Program Files/Git/bin/bash.exe",
+			"args": ["scripts\\rds-tunnel.sh"],
+			"group": "build",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			}
+		}
+	],
+	"inputs": [
+		{
+			"id": "functionName",
+			"type": "promptString",
+			"description": "Nombre de la función",
+			"default": ""
+		},
+		{
+			"id": "openFlag",
+			"type": "pickString",
+			"description": "¿Abrir el archivo generado?",
+			"options": ["", "--open"],
+			"default": ""
+		},
+		{
+			"id": "newSqlType",
+			"type": "pickString",
+			"description": "Tipo de archivo",
+			"options": ["migrations", "functions"],
+			"default": "migrations"
+		},
+		{
+			"id": "newSqlAction",
+			"type": "pickString",
+			"description": "Acción de migración (elige solo si es Migration, para functions selecciona 'N/A')",
+			"options": ["N/A (solo para functions)", "create", "update", "insert", "alter", "drop"],
+			"default": "N/A (solo para functions)"
+		},
+		{
+			"id": "newSqlName",
+			"type": "promptString",
+			"description": "Nombre descriptivo (lowercase, sin acentos)",
+			"default": ""
+		}
+	]
+}

@@ -1,0 +1,6 @@
+*.swp
+*.swo
+*.tmp
+.env
+
+.github/copilot-instructions.md

@@ -1,0 +1,183 @@
+# CI del monorepo: corre en cada Pull Request hacia main y en cada push a main.
+# Solo se ejecutan los jobs de las carpetas que cambiaron.
+# En la protección de main, exige únicamente el check "ci".
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.filter.outputs.web }}
+      mobile: ${{ steps.filter.outputs.mobile }}
+      api: ${{ steps.filter.outputs.api }}
+      db: ${{ steps.filter.outputs.db }}
+      root: ${{ steps.filter.outputs.root }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            js: &js
+              - 'package.json'
+              - 'yarn.lock'
+              - '.yarnrc.yml'
+            web:
+              - *js
+              - 'web/**'
+            mobile:
+              - *js
+              - 'mobile/**'
+            api:
+              - 'Trazent.Api/**'
+            db:
+              - 'db/**'
+            root:
+              - '*.json'
+              - '*.md'
+              - '*.js'
+              - '.prettierignore'
+              - '.github/**'
+
+  format:
+    needs: changes
+    if: needs.changes.outputs.web == 'true' || needs.changes.outputs.mobile == 'true' || needs.changes.outputs.root == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Activar Yarn 4 (Corepack)
+        run: |
+          npm install -g corepack
+          corepack enable
+      - run: yarn install --immutable
+        env:
+          HUSKY: 0
+      - name: Formato (Prettier)
+        run: yarn format:check
+
+  web:
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Activar Yarn 4 (Corepack)
+        run: |
+          npm install -g corepack
+          corepack enable
+      - name: Instalar dependencias (sin modificar yarn.lock)
+        run: yarn install --immutable
+        env:
+          HUSKY: 0
+      - name: ESLint
+        run: yarn workspace trazent-web lint
+      - name: Tipos y build
+        run: yarn workspace trazent-web build
+
+  mobile:
+    needs: changes
+    if: needs.changes.outputs.mobile == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Activar Yarn 4 (Corepack)
+        run: |
+          npm install -g corepack
+          corepack enable
+      - name: Instalar dependencias (sin modificar yarn.lock)
+        run: yarn install --immutable
+        env:
+          HUSKY: 0
+      - name: ESLint
+        run: yarn workspace trazent-mobile lint
+      - name: Tipos
+        run: yarn workspace trazent-mobile typecheck
+      # El build nativo (APK) lo hace EAS Build; no se compila aquí.
+
+  api:
+    needs: changes
+    if: needs.changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Trazent.Api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Restaurar paquetes
+        run: dotnet restore Trazent.Api.slnx
+      - name: Compilar
+        run: dotnet build Trazent.Api.slnx --configuration Release --no-restore
+      # Cuando haya pruebas: dotnet test Trazent.Api.slnx --configuration Release --no-build
+
+  db:
+    needs: changes
+    if: needs.changes.outputs.db == 'true'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: trazent_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: db
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: trazent_ci
+    steps:
+      - uses: actions/checkout@v4
+      - name: Aplicar todo sobre una base vacía
+        run: bash scripts/apply-pending.sh
+      - name: Segunda corrida (no debe quedar nada pendiente)
+        run: |
+          bash scripts/apply-pending.sh 2>&1 | tee second-run.log
+          grep -q "No hay migraciones pendientes" second-run.log
+
+  # Job final: siempre corre y falla si algún job anterior falló.
+  # Los jobs saltados (carpeta sin cambios) no cuentan como fallo.
+  ci:
+    needs: [changes, format, web, mobile, api, db]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resultado
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "Algún job falló."
+            exit 1
+          fi
+          echo "Todo en orden."

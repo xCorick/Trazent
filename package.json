@@ -1,0 +1,33 @@
+{
+  "name": "trazent",
+  "private": true,
+  "type": "module",
+  "packageManager": "yarn@4.16.0",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "workspaces": [
+    "web",
+    "mobile"
+  ],
+  "scripts": {
+    "dev:web": "yarn workspace trazent-web dev",
+    "dev:mobile": "yarn workspace trazent-mobile start",
+    "build:web": "yarn workspace trazent-web build",
+    "lint": "yarn workspace trazent-web lint && yarn workspace trazent-mobile lint",
+    "typecheck": "yarn workspace trazent-web typecheck && yarn workspace trazent-mobile typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "postinstall": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3"
+  },
+  "dependenciesMeta": {
+    "esbuild": {
+      "built": true
+    }
+  }
+}

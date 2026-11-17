@@ -1,0 +1,72 @@
+{
+  // Tareas del monorepo (Ctrl+Shift+P → "Tasks: Run Task").
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "db: apply-pending",
+      "type": "shell",
+      "command": "bash scripts/apply-pending.sh",
+      "windows": { "command": "& 'C:/Program Files/Git/bin/bash.exe' scripts/apply-pending.sh" },
+      "options": { "cwd": "${workspaceFolder}/db" },
+      "problemMatcher": []
+    },
+    {
+      "label": "db: nueva migración o función",
+      "type": "shell",
+      "command": "bash new-sql.sh ${input:newSqlType} \"${input:newSqlAction}\" ${input:newSqlName}",
+      "windows": {
+        "command": "& 'C:/Program Files/Git/bin/bash.exe' new-sql.sh ${input:newSqlType} \"${input:newSqlAction}\" ${input:newSqlName}"
+      },
+      "options": { "cwd": "${workspaceFolder}/db/scripts" },
+      "problemMatcher": []
+    },
+    {
+      "label": "web: dev",
+      "type": "shell",
+      "command": "yarn dev:web",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "mobile: dev (Expo)",
+      "type": "shell",
+      "command": "yarn dev:mobile",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "api: run",
+      "type": "shell",
+      "command": "dotnet run --project Trazent.Api/Trazent.Api/Trazent.Api.csproj",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "checks: todo (lint + tipos + formato)",
+      "type": "shell",
+      "command": "yarn lint && yarn typecheck && yarn format:check",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "newSqlType",
+      "type": "pickString",
+      "description": "Tipo de archivo",
+      "options": ["migrations", "functions"],
+      "default": "migrations"
+    },
+    {
+      "id": "newSqlAction",
+      "type": "pickString",
+      "description": "Acción de la migración (para funciones elige N/A)",
+      "options": ["N/A", "create", "update", "insert", "alter", "drop"],
+      "default": "N/A"
+    },
+    {
+      "id": "newSqlName",
+      "type": "promptString",
+      "description": "Nombre descriptivo (minúsculas, sin acentos)"
+    }
+  ]
+}

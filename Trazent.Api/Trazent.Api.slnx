@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Trazent.Infraestructure/Trazent.Infraestructure.csproj" />
+  <Project Path="Trazent.Api/Trazent.Api.csproj" />
+  <Project Path="Trazent.Core/Trazent.Core.csproj" />
+  <Project Path="Trazent.DataAccess/Trazent.DataAccess.csproj" />
+</Solution>

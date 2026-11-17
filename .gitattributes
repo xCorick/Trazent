@@ -1,0 +1,13 @@
+# Fin de línea LF en el repositorio (evita diferencias entre Windows y Linux/CI).
+* text=auto eol=lf
+*.sh text eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binarios
+*.png binary
+*.jpg binary
+*.ico binary
+*.ttf binary
+*.exe binary
+db/scripts/apply-pending binary

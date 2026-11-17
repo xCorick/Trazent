@@ -1,0 +1,45 @@
+# Dependencias y compilados (cualquier proyecto del monorepo)
+node_modules
+dist
+dev-dist
+*.local
+*.log
+
+# Variables de entorno: solo se versionan los ejemplos
+.env
+.env.*
+!.env.example
+
+# Yarn 4 (se versiona yarn.lock y la configuración, no la caché)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+# .NET (Trazent.Api/)
+bin/
+obj/
+*.user
+.vs/
+
+# Expo / React Native (mobile/): carpetas nativas generadas por Expo (CNG)
+.expo/
+mobile/android/
+mobile/ios/
+*.apk
+*.aab
+
+# Editor y sistema
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+.idea
+.DS_Store
+Thumbs.db
+
+# Archivos a borrar a mano
+_to_delete/

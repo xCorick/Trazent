@@ -1,0 +1,70 @@
+# --- Visual Studio / .NET ---
+.vs/
+.vscode/
+bin/
+obj/
+artifacts/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+*.pdb
+*.cache
+*.pidb
+*.svclog
+
+# --- NuGet ---
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+
+# --- Build / test ---
+[TestResults]/
+coverage/
+*.coverage
+*.coveragexml
+*.trx
+*.opencover.xml
+
+# --- Config / secrets ---
+appsettings.*.json
+!appsettings.json
+secrets.json
+*/secrets.json
+.env
+.env.*
+!.env.example
+*.secret
+*.pem
+*.key
+*.pfx
+*.p12
+*.db
+*.db-shm
+*.db-wal
+*.dump
+*.backup
+*.sql.gz
+
+# --- Docker / local containers ---
+docker-compose.override.yml
+docker-compose.override.yaml
+compose.override.yml
+compose.override.yaml
+pgdata/
+postgres-data/
+**/pgdata/
+**/postgres-data/
+
+# --- Logs / temp ---
+*.log
+*.tmp
+*.temp
+*.bak
+
+# --- OS ---
+Thumbs.db
+.DS_Store
+Desktop.ini

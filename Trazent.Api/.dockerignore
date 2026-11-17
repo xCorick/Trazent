@@ -1,0 +1,38 @@
+.git/
+.vs/
+.vscode/
+**/bin/
+**/obj/
+**/artifacts/
+**/TestResults/
+**/coverage/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+**/appsettings.Development.json
+**/appsettings.*.Local.json
+**/secrets.json
+**/*.secret
+**/*.pem
+**/*.key
+**/*.pfx
+**/*.p12
+
+# Local databases and PostgreSQL data
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.dump
+**/*.backup
+**/*.sql.gz
+pgdata/
+postgres-data/
+**/pgdata/
+**/postgres-data/
+
+# Logs and temporary files
+**/*.log
+**/*.tmp
+**/*.temp

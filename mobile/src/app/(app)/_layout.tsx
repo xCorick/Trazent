@@ -1,12 +1,17 @@
 import { Stack } from 'expo-router';
+import { useSession } from '@/features/auth';
+import { usePushRegistration } from '@/features/notifications';
 import { OfflineProvider } from '@/offline';
 import { colors } from '@/theme/tokens';
 
 /**
- * Pantallas con sesión. La cola sin conexión vive aquí: solo sincroniza
- * cuando hay un contratista con sesión iniciada.
+ * Pantallas con sesión. La cola sin conexión y el registro de notificaciones viven
+ * aquí: solo funcionan cuando hay un contratista con sesión iniciada.
  */
 export default function AppLayout() {
+  const { user } = useSession();
+  usePushRegistration(user?.id);
+
   return (
     <OfflineProvider>
       <Stack

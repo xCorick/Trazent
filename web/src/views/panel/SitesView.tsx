@@ -2,7 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { App, Button, Card, Segmented, Skeleton } from 'antd';
 import { useMemo, useState } from 'react';
 import { SiteFormModal } from '@/components';
-import { useAllSites, useCreateSite, useUpdateSite } from '@/hooks/useAdmin';
+import { useAllSites, useCreateSite, useUpdateSite } from '@/features/admin';
 import { EmptyState, PageHeader, SiteCard } from '@/molecules';
 import { errorMessage } from '@/services/apiError';
 import type { SaveSiteRequest, Site } from '@/types';

@@ -1,7 +1,7 @@
 import { Segmented, Skeleton } from 'antd';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMyTasks } from '@/hooks/useTasks';
+import { useMyTasks } from '@/features/tasks';
 import { EmptyState, TaskCard } from '@/molecules';
 import { paths } from '@/routes/paths';
 import { TaskStatus } from '@/types';

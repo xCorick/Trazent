@@ -77,5 +77,16 @@ Si la API rechaza un registro con un error 4xx, este queda marcado en _Perfil_ p
 ## Pasar a la API real
 
 1. En `.env`, pon `EXPO_PUBLIC_API_URL` y `EXPO_PUBLIC_USE_MOCKS=false`.
-2. Ajusta las rutas de `src/services/index.ts`. Las fotos ya se envían como `multipart/form-data`.
-3. Pendiente: renovar el token con el refresh token ante un 401 (`src/services/http.ts`).
+2. Las consultas GraphQL están en `src/services/index.ts` y siguen el contrato de
+   [`docs/api-graphql.md`](../docs/api-graphql.md). Si la API cambia un nombre, solo se ajusta ahí.
+3. Las fotos se suben directo a Cloudinary con una firma que da la API (`src/services/imageUpload.ts`); a la API
+   solo llega su `public_id`. La cola sin conexión no cambia: el servicio hace los tres pasos al sincronizar.
+4. Pendiente: renovar el token con el refresh token ante `UNAUTHENTICATED` (`src/services/graphql.ts`).
+
+## Notificaciones push
+
+La app registra su token de **Expo Push Service** al iniciar sesión (`src/features/notifications`). Para que funcione:
+
+1. Vincula el proyecto a EAS una vez: `npx eas-cli@latest init` en `mobile/` (agrega el `projectId` a `app.json`).
+2. Crea un proyecto en Firebase y sube a EAS las credenciales de FCM V1 (`npx eas-cli@latest credentials`).
+3. Compila un development build nuevo: Expo Go no recibe notificaciones en Android.

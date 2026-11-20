@@ -3,7 +3,7 @@ import { App, Button, Card, Input, Segmented, Typography } from 'antd';
 import { useMemo, useState } from 'react';
 import { UserFormModal, UserTable } from '@/components';
 import { useAuth } from '@/context/AuthContext';
-import { useCreateUser, useUpdateUser, useUsers } from '@/hooks/useAdmin';
+import { useCreateUser, useUpdateUser, useUsers } from '@/features/admin';
 import { PageHeader } from '@/molecules';
 import { errorMessage } from '@/services/apiError';
 import { Role, UserStatus } from '@/types';

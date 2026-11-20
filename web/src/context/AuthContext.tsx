@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { authService } from '@/services';
+import { authService } from '@/features/auth';
 import { tokenStorage } from '@/services/tokenStorage';
 import type { LoginRequest, User } from '@/types';
 

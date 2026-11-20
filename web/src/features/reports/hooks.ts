@@ -1,7 +1,8 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { reportService } from '@/services';
+
 import type { AttendanceReportQuery } from '@/types';
-import { queryKeys } from './queryKeys';
+import { queryKeys } from '@/services/queryKeys';
+import { reportService } from './api';
 
 export const useAttendanceReport = (query: AttendanceReportQuery) =>
   useQuery({

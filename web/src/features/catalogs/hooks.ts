@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { catalogService } from '@/services';
-import { queryKeys } from './queryKeys';
+
+import { queryKeys } from '@/services/queryKeys';
+import { catalogService } from './api';
 
 export const useSites = () =>
   useQuery({ queryKey: queryKeys.sites, queryFn: catalogService.sites, staleTime: 5 * 60_000 });

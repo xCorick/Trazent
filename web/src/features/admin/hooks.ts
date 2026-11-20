@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { siteService, userService } from '@/services';
+
 import type { CreateUserRequest, SaveSiteRequest, UpdateSiteRequest, UpdateUserRequest } from '@/types';
-import { queryKeys } from './queryKeys';
+import { queryKeys } from '@/services/queryKeys';
+import { siteService, userService } from './api';
 
 /** Hooks de las pantallas de administración (usuarios, sitios y geocercas). */
 

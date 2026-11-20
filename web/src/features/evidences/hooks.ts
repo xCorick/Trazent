@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { evidenceService } from '@/services';
+
 import type { EvidenceQuery, ReviewEvidenceRequest, UploadEvidenceRequest } from '@/types';
-import { queryKeys } from './queryKeys';
+import { queryKeys } from '@/services/queryKeys';
+import { evidenceService } from './api';
 
 export const useEvidences = (query: EvidenceQuery = {}) =>
   useQuery({ queryKey: queryKeys.evidences(query), queryFn: () => evidenceService.list(query) });

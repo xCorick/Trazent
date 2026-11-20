@@ -3,12 +3,12 @@
 Plataforma para gestionar asistencias, tareas y evidencias de contratistas externos. Este repositorio es un
 **monorepo** con todos los proyectos del sistema:
 
-| Carpeta        | Proyecto                                                                   | Responsable                    |
-| -------------- | -------------------------------------------------------------------------- | ------------------------------ |
-| `web/`         | Panel web para administrador y supervisor (React + Vite + Ant Design, PWA) | Adrián González Serrano        |
-| `mobile/`      | App del contratista (React Native + Expo SDK 58)                           | Jorge Alejandro Grijalva Soqui |
-| `Trazent.Api/` | API (ASP.NET Core 10 + Npgsql, llama funciones de PostgreSQL)              | María G. Cobos Camacho         |
-| `db/`          | Migraciones y funciones de PostgreSQL 17                                   | María G. Cobos Camacho         |
+| Carpeta        | Proyecto                                                                         | Responsable                    |
+| -------------- | -------------------------------------------------------------------------------- | ------------------------------ |
+| `web/`         | Panel web para administrador y supervisor (React + Vite + Ant Design, PWA)       | Adrián González Serrano        |
+| `mobile/`      | App del contratista (React Native + Expo SDK 58)                                 | Jorge Alejandro Grijalva Soqui |
+| `Trazent.Api/` | API GraphQL (ASP.NET Core 10 + GraphQL.AspNet + Npgsql, funciones de PostgreSQL) | María G. Cobos Camacho         |
+| `db/`          | Migraciones y funciones de PostgreSQL 17                                         | María G. Cobos Camacho         |
 
 ---
 
@@ -125,6 +125,10 @@ GraphiQL queda en `http://localhost:57930/ui/playground`. Para que un teléfono 
 
 En Render, la cadena de conexión va como variable de entorno `ConnectionStrings__ApplicationDBServer`
 (Neon exige `SSL Mode=Require`). La imagen se construye con `Trazent.Api/dockerfile`.
+
+El contrato que esperan la web y el móvil (operaciones, errores, subida de fotos a Cloudinary y notificaciones con
+Expo Push Service) está en [`docs/api-graphql.md`](docs/api-graphql.md). Las credenciales de Cloudinary van como
+`Cloudinary__CloudName`, `Cloudinary__ApiKey` y `Cloudinary__ApiSecret`.
 
 ## 4. Comandos de la raíz
 

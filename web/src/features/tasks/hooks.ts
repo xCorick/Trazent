@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { taskService } from '@/services';
+
 import type { CreateTaskRequest, TaskQuery } from '@/types';
-import { queryKeys } from './queryKeys';
+import { queryKeys } from '@/services/queryKeys';
+import { taskService } from './api';
 
 export const useTasks = (query: TaskQuery = {}) =>
   useQuery({ queryKey: queryKeys.tasks(query), queryFn: () => taskService.list(query) });

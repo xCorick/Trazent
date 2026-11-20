@@ -51,6 +51,13 @@ export enum ReviewDecision {
   Rejected = 1,
 }
 
+/** Plataforma del dispositivo (device_tokens.platform). */
+export enum DevicePlatform {
+  Android = 0,
+  IOS = 1,
+  Web = 2,
+}
+
 export enum VerificationMethod {
   AppEvidence = 0,
   InPerson = 1,

@@ -82,8 +82,9 @@ src/
 │  ├─ panel/       Panel web
 │  └─ mobile/      PROTOTIPO MÓVIL
 ├─ routes/         Rutas, protección por rol y paths
-├─ hooks/          Hooks de TanStack Query (lecturas y mutaciones)
-├─ services/       Cliente HTTP y servicios de la API
+├─ features/       Datos por dominio: api.ts (llamadas a la API) + hooks.ts (TanStack Query)
+│  └─ tasks/ evidences/ attendance/ dashboard/ catalogs/ admin/ reports/ auth/
+├─ services/       Compartido: cliente HTTP, errores, sesión, llaves de caché
 ├─ mocks/          Base de datos y API simulada del prototipo
 ├─ context/        Sesión del usuario
 ├─ types/          Modelos del dominio y DTOs de la API
@@ -92,22 +93,28 @@ src/
 └─ styles/         CSS global y responsivo
 ```
 
-Regla de dependencias: `views` → `components` → `molecules` → `atoms`. Las vistas nunca llaman a la API
-directamente: usan los hooks de `src/hooks`, que usan `src/services`.
+Organización híbrida:
+
+- **Interfaz con diseño atómico:** `views` → `components` → `molecules` → `atoms`. Las seis pantallas del panel
+  comparten la mayoría de sus piezas visuales.
+- **Datos por dominio en `src/features`:** cada dominio tiene `api.ts` (llamadas a la API) y `hooks.ts` (lecturas y
+  mutaciones con TanStack Query), y se importa desde su carpeta: `import { useTasks } from '@/features/tasks'`.
+
+Las vistas nunca llaman a la API directamente: usan los hooks de `features`, que usan su `api.ts`.
 
 ## Pasar a la API real
 
 1. Copia `.env.example` como `.env`.
 2. Pon la URL de la API en `VITE_API_URL` y cambia `VITE_USE_MOCKS=false`.
-3. Ajusta las rutas de `src/services/index.ts` a los endpoints definitivos.
+3. Las consultas GraphQL están en el `api.ts` de cada dominio (`src/features`) y siguen el contrato de
+   [`docs/api-graphql.md`](../docs/api-graphql.md). Si la API cambia un nombre, solo se ajusta ese archivo.
 
 Los enums de `src/types/domain.ts` usan los mismos valores smallint que la base de datos
 (`Role`, `TaskStatus`, `ReviewStatus`, `GeofenceStatus`, etc.), así que la API puede devolverlos tal cual.
 
 Pendientes conocidos para la versión real:
 
-- Renovar el access token con el refresh token ante un 401 (`src/services/http.ts`, marcado con TODO).
-- Enviar evidencias como `multipart/form-data` en lugar de data URL.
+- Renovar el access token con el refresh token ante `UNAUTHENTICATED` (`src/services/graphql.ts`, marcado con TODO).
 - Quitar las cuentas de demostración (`src/mocks/demoAccounts.ts`) y, al final, la carpeta `src/mocks`.
 
 ## Quitar la parte móvil

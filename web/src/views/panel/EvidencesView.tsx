@@ -1,7 +1,7 @@
 import { App, Card, Segmented, Skeleton } from 'antd';
 import { useState } from 'react';
 import { EvidenceReviewModal } from '@/components';
-import { useEvidences, useReviewEvidence } from '@/hooks/useEvidences';
+import { useEvidences, useReviewEvidence } from '@/features/evidences';
 import { EmptyState, EvidenceCard, PageHeader } from '@/molecules';
 import { errorMessage } from '@/services/apiError';
 import { ReviewStatus } from '@/types';

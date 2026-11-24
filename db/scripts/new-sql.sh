@@ -1,7 +1,12 @@
+
 #!/bin/bash
 set -e
 
-# Permitir argumentos de texto o número (ej: "migrations", "functions", "1", "2", etc.)
+# Obtener rutas del proyecto automáticamente
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DB_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Permitir argumentos de texto o número
 type_arg="$1"
 action_arg="$2"
 name_arg="$3"
@@ -21,6 +26,7 @@ if [ -z "$TYPE" ]; then
   echo "1) migrations"
   echo "2) functions"
   read -p "Select an option [1/2]: " TYPE_INPUT
+
   case "$TYPE_INPUT" in
     1) TYPE="migrations";;
     2) TYPE="functions";;
@@ -29,7 +35,8 @@ if [ -z "$TYPE" ]; then
   esac
 fi
 
-if [ "$TYPE" == "migrations" ]; then
+if [ "$TYPE" = "migrations" ]; then
+
   # Normalizar acción
   case "$action_arg" in
     "N/A (solo para functions)"|"N/A"|"") ACTION_STR="";;
@@ -40,6 +47,7 @@ if [ "$TYPE" == "migrations" ]; then
     5|drop) ACTION_STR="drop";;
     *) ACTION_STR="";;
   esac
+
   if [ -z "$ACTION_STR" ]; then
     echo "What action type is the migration?"
     echo "1) create"
@@ -47,7 +55,9 @@ if [ "$TYPE" == "migrations" ]; then
     echo "3) insert"
     echo "4) alter"
     echo "5) drop"
-    read -p "Select an action [1-5/create/update/insert/alter/drop]: " ACTION_INPUT
+
+    read -p "Select an action [1-5]: " ACTION_INPUT
+
     case "$ACTION_INPUT" in
       1|create) ACTION_STR="create";;
       2|update) ACTION_STR="update";;
@@ -57,33 +67,44 @@ if [ "$TYPE" == "migrations" ]; then
       *) echo "❌ Invalid action."; exit 1;;
     esac
   fi
-  FOLDER="../migrations"
-  if [ -n "$name_arg" ]; then
-    NAME="$name_arg"
-  else
-    read -p "Enter a descriptive name (lowercase, no accents): " NAME
-  fi
-  SAFE_NAME=$(echo "$NAME" | xargs | tr '[:space:]' '_' | tr '[:upper:]' '[:lower:]' | sed 's/_*$//')
-  TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+
+  FOLDER="$DB_DIR/migrations"
+
+else
+  FOLDER="$DB_DIR/functions"
+fi
+
+# Obtener nombre
+if [ -n "$name_arg" ]; then
+  NAME="$name_arg"
+else
+  read -p "Enter a descriptive name (lowercase, no accents): " NAME
+fi
+
+# Normalizar nombre
+SAFE_NAME=$(echo "$NAME" | xargs | tr '[:space:]' '_' | tr '[:upper:]' '[:lower:]' | sed 's/_*$//')
+
+# Generar timestamp
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+
+# Generar nombre del archivo
+if [ "$TYPE" = "migrations" ]; then
   FILENAME="${FOLDER}/${TIMESTAMP}_${ACTION_STR}_${SAFE_NAME}.sql"
 else
-  FOLDER="../functions"
-  if [ -n "$name_arg" ]; then
-    NAME="$name_arg"
-  else
-    read -p "Enter a descriptive name (lowercase, no accents): " NAME
-  fi
-  SAFE_NAME=$(echo "$NAME" | xargs | tr '[:space:]' '_' | tr '[:upper:]' '[:lower:]' | sed 's/_*$//')
-  TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
   FILENAME="${FOLDER}/${TIMESTAMP}_${SAFE_NAME}.sql"
 fi
 
-touch "$FILENAME"
+# Crear directorio si no existe
+mkdir -p "$FOLDER"
 
-echo "-- $FILENAME" > "$FILENAME"
-echo "-- Author: $(git config user.name)" >> "$FILENAME"
-echo "-- Date: $(date)" >> "$FILENAME"
-echo "--" >> "$FILENAME"
-echo "-- Write your SQL below" >> "$FILENAME"
+# Crear archivo SQL
+cat > "$FILENAME" <<EOF
+-- $FILENAME
+-- Author: $(git config user.name || echo "Unknown")
+-- Date: $(date)
+--
+-- Write your SQL below
+EOF
 
+echo ""
 echo "✅ File created: $FILENAME"

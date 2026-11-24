@@ -4,7 +4,7 @@ using System.Text;
 using Trazent.Infraestructure.Common.Entities;
 using Trazent.Infraestructure.Models;
 
-namespace Trazent.Core.Implementations.Services
+namespace Trazent.Core.Infraestructure.Services
 {
     public interface ICompaniesServices
     {

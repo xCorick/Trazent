@@ -9,5 +9,7 @@ namespace Trazent.Api.Core.Implementations.Repositories
     public interface ICoreUnitRepositories : IRepositoryBase
     {
         ICompaniesRepository CompaniesRepository { get; }
+        IUsersRepository UsersRepository { get; }
+        ISitesRepository SitesRepository { get; }
     }
 }

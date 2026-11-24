@@ -34,58 +34,16 @@ namespace Trazent.Api.Core.Implementations.Repositories
 
             const string sql = "create_company";
 
-            try
+            await using var command = new NpgsqlCommand(sql, _connection, _transaction)
             {
-                await using var command = new NpgsqlCommand(sql, _connection, _transaction)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
-
-                command.Parameters.AddWithValue("p_name", company.Name);
-                command.Parameters.AddWithValue("p_plan", (byte)company.Plan);
-
-                var result = await command.ExecuteScalarAsync();
-                return Convert.ToString(result);
-            }
-
-            catch (Exception ex)
-            {
-                throw new Exception($"Error creating company: {ex.Message}", ex);
-
-            }
-        }
-        #endregion
-        #region GetAllCompaniesAsync
-        public async Task <List<Companies>> GetAllCompaniesAsync()
-        {
-            if (_connection == null)
-                throw new InvalidOperationException("Connection not initialized.");
-
-            var companies = new List<Companies>();
-
-            const string sql = "get_all_companies";
-
-            await using var command = new NpgsqlCommand(sql, _connection)
-            {
-                CommandType = CommandType.StoredProcedure
+              CommandType = CommandType.StoredProcedure
             };
 
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                companies.Add(new Companies
-                {
-                    Id = reader.GetGuid(reader.GetOrdinal("company_id")),
-                    Name = reader.GetString(reader.GetOrdinal("name")),
-                    Plan = (PlanTypeEnum)reader.GetInt16("plan"),
-                    IsActive = reader.GetBoolean(reader.GetOrdinal("is_active")),
-                    CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
-                    UpdatedAt = reader.IsDBNull(reader.GetOrdinal("updated_at"))
-                    ? null
-                    : reader.GetDateTime(reader.GetOrdinal("updated_at"))
-                });
-            }
-            return companies;            
+            command.Parameters.AddWithValue("p_name", company.Name);
+            command.Parameters.AddWithValue("p_plan", (byte)company.Plan);
+
+            var result = await command.ExecuteScalarAsync();
+            return Convert.ToString(result);
         }
         #endregion
         #region UdpateCompanyAsync
@@ -142,7 +100,6 @@ namespace Trazent.Api.Core.Implementations.Repositories
         }
         #endregion
         #region GetCompanyById
-
         public async Task<Companies> GetCompanyById(Guid id, bool? isActive = null)
         {
             if (_connection == null)

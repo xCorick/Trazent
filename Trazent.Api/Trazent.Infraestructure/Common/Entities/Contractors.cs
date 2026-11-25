@@ -10,10 +10,11 @@ namespace Trazent.Infraestructure.Common.Entities
         public Guid Id { get; set; }
         public Users User { get; set; }
         public Companies Company { get; set; }
-        public string Speciality { get; set; }
-        public string Phone { get; set; }
+        public string? Speciality { get; set; }
+        public string? Phone { get; set; }
         public StatusTypeEnum Status { get; set; }
+        public int AssignedSites { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }

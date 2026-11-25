@@ -1,9 +1,7 @@
-﻿using GraphQL.AspNet.Attributes;
 using Trazent.Infraestructure.Common.Enums;
 
 namespace Trazent.Api.GraphQL.Types.CompaniesType
 {
-    [GraphType(InputName = ("companyInputType"))]
     public class CompaniesInputType
     {
         public Guid Id { get; set; }

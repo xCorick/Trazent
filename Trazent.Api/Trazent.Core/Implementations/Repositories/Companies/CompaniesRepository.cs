@@ -14,56 +14,69 @@ namespace Trazent.Api.Core.Implementations.Repositories
     public class CompaniesRepository : ICompaniesRepository
     {
         private readonly ILogger<CompaniesRepository> _logger;
-        private readonly IAppDbContext _appDbContext;
+        private NpgsqlConnection _connection = default!;
+        private NpgsqlTransaction? _transaction;
 
-        public CompaniesRepository(
-            ILogger<CompaniesRepository> logger,
-            IAppDbContext appDbContext)
+        public CompaniesRepository(ILogger<CompaniesRepository> logger)
+             => _logger = logger;
+
+        public void SetConnection(NpgsqlConnection connection, NpgsqlTransaction? transaction = null)
         {
-            _logger = logger;
-            _appDbContext = appDbContext;
+            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            _transaction = transaction;
         }
 
+        #region CreateCompanyAsync
         public async Task<string> CreateCompanyAsync(Companies company)
         {
-            if (_appDbContext.Connection == null)
+            if (_connection == null)
                 throw new InvalidOperationException("Connection not initialized.");
 
             const string sql = "create_company";
 
-
-            try
+            await using var command = new NpgsqlCommand(sql, _connection, _transaction)
             {
+              CommandType = CommandType.StoredProcedure
+            };
 
-                await using var command = new NpgsqlCommand(sql, _appDbContext.Connection)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
+            command.Parameters.AddWithValue("p_name", company.Name);
+            command.Parameters.AddWithValue("p_plan", (byte)company.Plan);
 
-                command.Parameters.AddWithValue("p_name", company.Name);
-                command.Parameters.AddWithValue("p_plan", (byte)company.Plan);
-
-                var result = await command.ExecuteScalarAsync();
-                return Convert.ToString(result);
-            }
-
-            catch (Exception ex)
-            {
-                throw new Exception($"Error creating company: {ex.Message}", ex);
-
-            }
+            var result = await command.ExecuteScalarAsync();
+            return Convert.ToString(result);
         }
-
-    public async Task <List<Companies>> GetAlltCompaniesAsync()
+        #endregion
+        #region UdpateCompanyAsync
+        public async Task UpdateCompaniesAsync(Companies company)
         {
-            if (_appDbContext.Connection == null)
+            if (_connection == null)
+                throw new InvalidOperationException("Connection not initialized.");
+
+            const string sql = "update_company";
+
+            await using var command = new NpgsqlCommand(sql, _connection, _transaction)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            command.Parameters.AddWithValue("p_id", company.Id);
+            command.Parameters.AddWithValue("p_name", company.Name);
+            command.Parameters.AddWithValue("p_plan", (byte)company.Plan);
+
+            await command.ExecuteNonQueryAsync();
+        }
+        #endregion
+        #region GetAllCompanies
+        public async Task<List<Companies>> GetAlltCompaniesAsync()
+        {
+            if (_connection == null)
                 throw new InvalidOperationException("Connection not initialized.");
 
             var companies = new List<Companies>();
 
             const string sql = "get_all_companies";
 
-            await using var command = new NpgsqlCommand(sql, _appDbContext.Connection)
+            await using var command = new NpgsqlCommand(sql, _connection)
             {
                 CommandType = CommandType.StoredProcedure
             };
@@ -83,31 +96,13 @@ namespace Trazent.Api.Core.Implementations.Repositories
                     : reader.GetDateTime(reader.GetOrdinal("updated_at"))
                 });
             }
-            return companies;            
+            return companies;
         }
-
-        public async Task UpdateCompaniesAsync(Companies company)
+        #endregion
+        #region GetCompanyById
+        public async Task<Companies> GetCompanyById(Guid id, bool? isActive = null)
         {
-            if (_appDbContext.Connection == null)
-                throw new InvalidOperationException("Connection not initialized.");
-
-            const string sql = "update_company";
-
-            await using var command = new NpgsqlCommand(sql, _appDbContext.Connection)
-            {
-                CommandType = CommandType.StoredProcedure
-            };
-
-            command.Parameters.AddWithValue("p_id", company.Id);
-            command.Parameters.AddWithValue("p_name", company.Name);
-            command.Parameters.AddWithValue("p_plan", (byte)company.Plan);
-
-            await command.ExecuteNonQueryAsync();
-        }
-
-        public async Task<Companies> GetCompanyById(Guid id, bool? isActive = true)
-        {
-            if (_appDbContext.Connection == null)
+            if (_connection == null)
                 throw new InvalidOperationException("Connection not initialized.");
 
             Companies company = new()
@@ -117,7 +112,7 @@ namespace Trazent.Api.Core.Implementations.Repositories
 
             const string sql = "get_company_by_id";
             
-            await using var command = new NpgsqlCommand(sql, _appDbContext.Connection)
+            await using var command = new NpgsqlCommand(sql, _connection)
             {
                 CommandType = CommandType.StoredProcedure
             }; 
@@ -139,15 +134,16 @@ namespace Trazent.Api.Core.Implementations.Repositories
             return company;
             //return company.Id != default ? company : null;
         }
-
+        #endregion
+        #region ChangeIsActiveByIdAsync
         public async Task<bool> ChangeIsActiveByIdAsync(Guid id)
         {
-            if (_appDbContext.Connection == null)
-                throw new InvalidOperationException("Connection not iniyialized.");
+            if (_connection == null)
+                throw new InvalidOperationException("Connection not initialized.");
 
             const string sql = "change_company_status_by_id";
 
-            await using var command = new NpgsqlCommand(sql, _appDbContext.Connection)
+            await using var command = new NpgsqlCommand(sql, _connection)
             {
                 CommandType = CommandType.StoredProcedure
             };
@@ -158,5 +154,6 @@ namespace Trazent.Api.Core.Implementations.Repositories
 
             return Convert.ToBoolean(result);
         }
+        #endregion
     }
 }

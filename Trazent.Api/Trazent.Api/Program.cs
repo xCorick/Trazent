@@ -1,7 +1,7 @@
 using GraphQL.AspNet.Configuration;
 using Trazent.Api.DataAccess;
 using Trazent.Api.GraphQL.Mapping;
-using Trazent.Core.Implementations.Services;
+using Trazent.Core.Infraestructure.Services;
 using Trazent.Core;
 using AutoMapper;
 
@@ -12,7 +12,7 @@ System.AppContext.SetSwitch(
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IDatabaseConnection, DatabaseConnection>();
-builder.Services.AddCoreServices();
+builder.Services.RegisterCoreServices();
 builder.Services.AddAutoMapper(configuration =>
     configuration.AddMaps(typeof(CompaniesMappingProfile).Assembly));
 builder.Services.AddCors(options =>
@@ -46,9 +46,11 @@ app.UseCors();
 
 app.UseGraphQLGraphiQL("/ui/playground");
 
-app.UseGraphQL();
-
 app.UseHttpsRedirection();
+
+app.UseForwardedHeaders();
+
+app.UseGraphQL();
 
 app.UseAuthorization();
 

@@ -25,6 +25,7 @@ public static class CoreServiceCollections
         services.AddScoped<ICompaniesRepository, CompaniesRepository>();
         services.AddScoped<IUsersRepository, UsersRepository>();
         services.AddScoped<ISitesRepository, SitesRepository>();
+        services.AddScoped<IContractorsRepository, ContractorsRepository>();
     }
 
     private static void RegisterServices(this IServiceCollection services)
@@ -32,5 +33,6 @@ public static class CoreServiceCollections
         services.AddScoped<ICompaniesServices, CompaniesServices>();
         services.AddScoped<IUsersServices, UsersServices>();
         services.AddScoped<ISitesServices, SitesServices>();
+        services.AddScoped<IContractorsServices, ContractorsServices>();
     }
 }

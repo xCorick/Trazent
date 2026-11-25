@@ -11,5 +11,6 @@ namespace Trazent.Api.Core.Implementations.Repositories
         ICompaniesRepository CompaniesRepository { get; }
         IUsersRepository UsersRepository { get; }
         ISitesRepository SitesRepository { get; }
+        IContractorsRepository ContractorsRepository { get; }
     }
 }
